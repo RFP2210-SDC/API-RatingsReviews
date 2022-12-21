@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 // const favicon = require('serve-favicon');
 // const compression = require('compression');
-const ratingsReviewsAPI = require('./ratingsReviews/index.cjs');
+const ratingsReviewsAPI = require('./ratingsReviews');
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(compression());
 
 // STATIC SERVICE OF ASSETS
-app.use(express.static(path.join(__dirname, '../client/dist')));
+// app.use(express.static(path.join(__dirname, '../client/dist')));
 // app.use(favicon(path.join(__dirname, 'favicon.ico')));
 
 // ROUTES
