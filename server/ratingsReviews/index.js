@@ -11,4 +11,12 @@ async function testing() {
 
 testing();
 
+// async function setupDatabase() {
+//   client.query('CREATE DATABASE IF NOT EXISTS reviews')
+//     .then(client.query(`CREATE TABLE IF NOT EXISTS metadata (
+//       id INT NOT NULL PRIMARY KEY,
+//       ratings
+//     )`));
+// }
+
 module.exports = client;
