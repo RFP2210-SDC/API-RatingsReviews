@@ -1,22 +1,49 @@
-const { Client } = require('pg');
+const mongoose = require('mongoose');
 
-const client = new Client();
-client.connect();
+mongoose.connect('mongodb://localhost:27017/reviewsDB')
+  .catch((err) => console.log(err));
 
-async function testing() {
-  const res = await client.query('SELECT $1::text as message', ['Hello world!']);
-  console.log(res.rows[0].message); // Hello world!
-  await client.end();
-}
+const db = {};
 
-testing();
+const users = new mongoose.Schema({
+  reviewer_name: String,
+  reviewer_email: String,
+});
 
-// async function setupDatabase() {
-//   client.query('CREATE DATABASE IF NOT EXISTS reviews')
-//     .then(client.query(`CREATE TABLE IF NOT EXISTS metadata (
-//       id INT NOT NULL PRIMARY KEY,
-//       ratings
-//     )`));
-// }
+db.User = mongoose.model('User', users);
 
-module.exports = client;
+const metadata = new mongoose.Schema({
+  product_id: Number,
+  ratings: Object,
+  recommended: Object,
+  characteristics: Object,
+});
+
+db.Metadata = mongoose.model('Metadata', metadata);
+
+const reviews = new mongoose.Schema({
+  review_id: Number,
+  product_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  rating: Number,
+  summary: String,
+  recommend: Boolean,
+  response: String,
+  body: String,
+  date: Date,
+  reviewer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  helpfulness: Number,
+  photos: Object,
+  reported: Boolean,
+});
+
+db.Review = mongoose.model('Review', reviews);
+
+module.exports = db;
