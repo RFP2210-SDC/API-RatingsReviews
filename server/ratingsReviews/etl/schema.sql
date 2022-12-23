@@ -39,3 +39,4 @@ CREATE INDEX idx_reviews_reported ON reviews(reported);
 
 -- To login to postgres reviews database on CL enter:
 -- psql reviews
+-- then type \dt to view all tables
