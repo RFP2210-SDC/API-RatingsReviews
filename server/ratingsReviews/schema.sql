@@ -34,8 +34,8 @@ CREATE TABLE reviews (
 CREATE INDEX idx_reviews_reported ON reviews(reported);
 
 /*  Execute this file from the command line by typing:
- *    psql reviews postgres < server/ratingsReviews/schema.sql
- *  to create the tables.*/
+ *    psql reviews < server/ratingsReviews/schema.sql
+ *  to create the tables in the reviews database.*/
 
--- To login to postgres:
--- psql -h localhost -p 5432 -U postgres -W // to get into psql
+-- To login to postgres reviews database on CL enter:
+-- psql reviews
