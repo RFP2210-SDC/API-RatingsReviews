@@ -1,22 +1,34 @@
-const { Client } = require('pg');
+/* eslint-disable consistent-return */
+// REQUIRE STATEMENTS
+require('dotenv').config();
+const express = require('express');
+// const path = require('path');
+const morgan = require('morgan');
+const cors = require('cors');
+// const compression = require('compression');
+const db = require('./db');
 
-const client = new Client();
-client.connect();
+const app = express();
 
-async function testing() {
-  const res = await client.query('SELECT $1::text as message', ['Hello world!']);
-  console.log(res.rows[0].message); // Hello world!
-  await client.end();
-}
+// APP-WIDE MIDDLEWARE
+app.use(morgan('dev'));
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// app.use(compression());
 
-testing();
+// ROUTES
+app.get('/reviews', (req, res) => {
+  db.getReviews(req.query, (err, reviews) => {
+    if (err) {
+      res.status(400).send(err);
+    } else {
+      res.status(200).send(reviews);
+    }
+  });
+});
 
-// async function setupDatabase() {
-//   client.query('CREATE DATABASE IF NOT EXISTS reviews')
-//     .then(client.query(`CREATE TABLE IF NOT EXISTS metadata (
-//       id INT NOT NULL PRIMARY KEY,
-//       ratings
-//     )`));
-// }
-
-module.exports = client;
+// PORT AND SERVER LISTEN
+const PORT = process.env.PORT || 3300;
+app.listen(PORT);
+console.log(`Server listening at http://localhost:${PORT}`);

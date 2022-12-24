@@ -37,6 +37,8 @@ CREATE TABLE orig_characteristic_reviews (
   value INT
 );
 
+CREATE INDEX idx_reviews_reported ON orig_reviews(reported);
+
 COPY orig_reviews FROM '/Users/chadfusco/Library/CloudStorage/GoogleDrive-mustrunfaster@gmail.com/Other computers/My Laptop/Current Folder/Coding Career/Coding Education/Hack Reactor SEI/API-RatingsReviews/rawdata/transformed_reviews.csv' WITH (FORMAT CSV, HEADER true);
 
 COPY orig_reviews_photos FROM '/Users/chadfusco/Library/CloudStorage/GoogleDrive-mustrunfaster@gmail.com/Other computers/My Laptop/Current Folder/Coding Career/Coding Education/Hack Reactor SEI/API-RatingsReviews/rawdata/reviews_photos.csv' WITH (FORMAT CSV, HEADER true);

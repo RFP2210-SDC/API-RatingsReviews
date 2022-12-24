@@ -2,6 +2,9 @@
   "name": "atelier",
   "version": "1.0.0",
   "description": "Online shopping portal",
+  "scripts": {
+    "start": "nodemon server/ratingsReviews/index.js"
+  },
   "dependencies": {
     "axios": "^1.2.1",
     "cors": "^2.8.5",
@@ -9,6 +12,7 @@
     "express": "^4.18.2",
     "fast-csv": "^4.3.6",
     "morgan": "^1.10.0",
+    "nodemon": "^2.0.20",
     "pg": "^8.8.0"
   },
   "devDependencies": {
