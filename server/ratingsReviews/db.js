@@ -18,16 +18,16 @@ exports.getReviews = (params, callback) => {
     const offset = (page - 1) * count;
     let sortOrder;
     if (sort === 'newest') {
-      sortOrder = 'date DESC, id';
+      sortOrder = 'date DESC, review_id';
     } else if (sort === 'helpfulness') {
-      sortOrder = 'helpfulness DESC, date DESC, id';
+      sortOrder = 'helpfulness DESC, date DESC, review_id';
     } else {
       // relevant calc'ed by helpfulness minus months ago.
       sortOrder = 'helpfulness-(extract(epoch from now())::INTEGER'
-        + ' - extract(epoch from date)::INTEGER)/2600000 DESC, id';
+        + ' - extract(epoch from date)::INTEGER)/2600000 DESC, review_id';
     }
     const query = format(
-      'SELECT * FROM orig_reviews WHERE product_id=%s '
+      'SELECT * FROM orig_reviews WHERE product_id=%s AND reported=false '
       + 'ORDER BY %s LIMIT %s OFFSET %s;',
       product_id,
       sortOrder,
@@ -50,38 +50,3 @@ exports.getReviews = (params, callback) => {
     );
   });
 };
-
-// pool.connect((err, client, release) => {
-//   if (err) {
-//     return console.error('Error acquiring client', err.stack);
-//   }
-//   client.query('SELECT NOW()', (error, result) => {
-//     release();
-//     if (error) {
-//       return console.error('Error executing query', error.stack);
-//     }
-//     console.log(result.rows);
-//   });
-// });
-
-// async function setupDatabase() {
-//   client.query('CREATE DATABASE IF NOT EXISTS reviews')
-//     .then(client.query(`CREATE TABLE IF NOT EXISTS metadata (
-//       id INT NOT NULL PRIMARY KEY,
-//       ratings
-//     )`));
-// }
-
-// // FROM MOVIE LIST
-// const mysql = require('mysql2');
-
-// const db = mysql.createConnection({
-//   host: 'localhost',
-//   user: 'root',
-//   password: '',
-//   database: process.env.DB_NAME
-// })
-
-// module.exports = db;
-
-// SELECT * FROM orig_reviews ORDER BY helpfulness-(extract(epoch from now())::INTEGER - extract(epoch from date)::INTEGER)/2600000 DESC LIMIT 10;
