@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { parse, format } = require('fast-csv');
 
-const inputFile = path.resolve(__dirname, '../../rawdata/reviews.csv');
-const outputFile = path.resolve(__dirname, '../../rawdata/transformed_reviews.csv');
+const inputFile = path.resolve(__dirname, '../../../rawdata/reviews.csv');
+const outputFile = path.resolve(__dirname, '../../../rawdata/transformed_reviews.csv');
 
 (async function transformCsv() {
   const writeStream = fs.createWriteStream(outputFile);
@@ -27,7 +27,7 @@ const outputFile = path.resolve(__dirname, '../../rawdata/transformed_reviews.cs
         reported: row.reported,
         reviewer_name: `"${row.reviewer_name}"`,
         reviewer_email: `"${row.reviewer_email}"`,
-        response: row.response === 'null' ? 'null' : `"${row.response}"`,
+        response: row.response === 'null' ? null : `"${row.response}"`,
         helpfulness: row.helpfulness,
       }
     ));

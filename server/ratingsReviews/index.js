@@ -19,11 +19,17 @@ app.use(express.urlencoded({ extended: true }));
 
 // ROUTES
 app.get('/reviews', (req, res) => {
-  db.getReviews(req.query, (err, reviews) => {
-    if (err) {
-      res.status(400).send(err);
+  db.getConnection((error, client, release) => {
+    if (error) {
+      res.status(400).send(error);
     } else {
-      res.status(200).send(reviews);
+      db.getReviews(req.query, client, release, (err, reviews) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.status(200).send(reviews);
+        }
+      });
     }
   });
 });
