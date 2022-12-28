@@ -50,6 +50,22 @@ app.get('/reviews/meta', (req, res) => {
   });
 });
 
+app.put('/reviews/:review_id/helpful', (req, res) => {
+  db.getConnection((error, client, release) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      db.updateHelpfulness(req.params.review_id, client, release, (err) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.sendStatus(204);
+        }
+      });
+    }
+  });
+});
+
 // PORT AND SERVER LISTEN
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);

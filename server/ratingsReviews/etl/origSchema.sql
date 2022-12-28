@@ -38,7 +38,7 @@ CREATE TABLE orig_characteristic_reviews (
 );
 
 DROP INDEX IF EXISTS idx_reviews_reported;
-CREATE INDEX idx_reviews_reported ON orig_reviews(reported);
+-- CREATE INDEX idx_reviews_reported ON orig_reviews(reported);
 
 COPY orig_reviews FROM '/Users/chadfusco/Library/CloudStorage/GoogleDrive-mustrunfaster@gmail.com/Other computers/My Laptop/Current Folder/Coding Career/Coding Education/Hack Reactor SEI/API-RatingsReviews/rawdata/transformed_reviews.csv' WITH (FORMAT CSV, HEADER true);
 

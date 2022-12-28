@@ -1,3 +1,18 @@
+-- WORKING ON GET ALL REVIEWS
+
+SELECT r.review_id, rating, summary, recommend, response, body, date, reviewer_name,
+  helpfulness, JSONB_AGG(JSONB_BUILD_OBJECT('id', id, 'url', url) ORDER BY id) AS photos
+  FROM orig_reviews AS r
+  LEFT JOIN orig_reviews_photos AS p ON r.review_id=p.review_id
+  WHERE product_id=1 AND reported=false
+  GROUP BY r.review_id
+  ORDER BY helpfulness-(extract(epoch from now())::INTEGER
+    - extract(epoch from date)::INTEGER)/2600000 DESC, r.review_id
+  LIMIT 5 OFFSET 0;
+
+
+-- WORKING ON METADATA CHARACTERISTICS
+
 SELECT c.product_id,
   JSONB_OBJECT_AGG(c.name, JSONB_BUILD_OBJECT('id', c.id, 'value', cr.value)) AS characteristics
   FROM orig_reviews AS r
@@ -43,7 +58,7 @@ SELECT s.product_id, JSONB_OBJECT_AGG(name, characteristics) AS characteristics
   ) AS s
   GROUP BY s.product_id;
 
-SELECT s.product_id, JSONB_OBJECT_AGG(name, characteristics) AS characteristics
+SELECT s.product_id::text, JSONB_OBJECT_AGG(name, characteristics) AS characteristics
   FROM (
     SELECT c.product_id, c.name,
       JSONB_BUILD_OBJECT('id', c.id, 'value', ROUND(AVG(cr.value),4)) AS characteristics
@@ -71,15 +86,35 @@ SELECT r.review_id, c.name, cr.value
 
 
 
--- WORKING ON RATINGS AND RECOMMENDED
+-- WORKING ON RATINGS
 
-SELECT JSONB_OBJECT_AGG(rating, ratings) AS ratings
+SELECT JSONB_OBJECT_AGG(rating, ratings::text) AS ratings
 FROM (
   SELECT product_id, rating, COUNT(rating) AS ratings
     FROM orig_reviews AS r
-    WHERE product_id=2
+    WHERE product_id=79
     GROUP BY rating, product_id
 ) AS s
 GROUP BY s.product_id;
 
 -- ^^^^^ BEST OPTION SO FAR FOR RATINGS
+
+
+-- WORKING ON RECOMMENDED
+
+SELECT JSONB_OBJECT_AGG(recommend, recommendCnt::text) AS recommended
+FROM (
+  SELECT product_id, recommend, COUNT(recommend) AS recommendCnt
+    FROM orig_reviews AS r
+    WHERE product_id=79
+    GROUP BY product_id, recommend
+) AS s
+GROUP BY s.product_id;
+
+-- ^^^^^ BEST OPTION SO FAR FOR RECOMMEND
+
+-- WORKING ON PUT HELPFULNESS
+
+UPDATE orig_reviews
+SET helpfulness = helpfulness + 1
+WHERE review_id=1;
