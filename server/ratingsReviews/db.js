@@ -51,11 +51,9 @@ exports.getReviews = (params, client, release, callback) => {
   console.log(query);
   client.query(query)
     .then((res) => {
-      const results = res.rows;
-      console.log(res.rows);
-      if (res.rows.photos.length === 1 && res.rows.photos.url === null) {
-        results.photos = [];
-      }
+      const results = res.rows.map((review) => (
+        review.photos.length === 1 && !review.photos[0].url ? { ...review, photos: [] } : review
+      ));
       const result = {
         product: product_id,
         page: parseInt(page, 10),
@@ -66,37 +64,3 @@ exports.getReviews = (params, client, release, callback) => {
     })
     .catch((err) => callback(err.stack));
 };
-
-// PRIOR ITERATIONS:
-
-// const query = format(
-//   'SELECT r.review_id, rating, summary, recommend, response, body, date, '
-//   + 'reviewer_name, helpfulness, ARRAY_AGG(p.id || p.url) photos '
-//   + 'FROM orig_reviews AS r '
-//   + 'LEFT JOIN orig_reviews_photos AS p ON r.review_id=p.review_id '
-//   + 'WHERE product_id=%s AND reported=false '
-//   + 'GROUP BY r.review_id '
-//   + 'ORDER BY %s LIMIT %s OFFSET %s;',
-//   product_id,
-//   sortOrder,
-//   count,
-//   offset,
-// );
-// RESULT:
-// [
-//   {
-//       "review_id": 5,
-//       "rating": 3,
-//       "summary": "I'm enjoying wearing these shades",
-//       "recommend": true,
-//       "response": "null",
-//       "body": "Comfortable and practical.",
-//       "date": "2021-03-17T13:28:37.620Z",
-//       "reviewer_name": "shortandsweeet",
-//       "helpfulness": 5,
-//       "photos": [
-//           "2https://images.unsplash.com/photo-1561693532-9ff59442a7db?ixlib=rb-1.2.1&auto=format&fit=crop&w=975&q=80",
-//           "3https://images.unsplash.com/photo-1487349384428-12b47aca925e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80",
-//           "1https://images.unsplash.com/photo-1560570803-7474c0f9af99?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=975&q=80"
-//       ]
-//   },
