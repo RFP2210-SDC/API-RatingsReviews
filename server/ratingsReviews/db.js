@@ -50,10 +50,22 @@ exports.getReviews = (params, client, release, callback) => {
   // Perform initial query
   console.log(query);
   client.query(query)
-    .then((res) => callback(null, res.rows))
+    .then((res) => {
+      const results = res.rows;
+      console.log(res.rows);
+      if (res.rows.photos.length === 1 && res.rows.photos.url === null) {
+        results.photos = [];
+      }
+      const result = {
+        product: product_id,
+        page: parseInt(page, 10),
+        count: parseInt(count, 10),
+        results,
+      };
+      callback(null, result);
+    })
     .catch((err) => callback(err.stack));
 };
-
 
 // PRIOR ITERATIONS:
 
