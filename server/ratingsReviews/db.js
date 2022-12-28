@@ -15,6 +15,7 @@ exports.getConnection = (cb) => {
   });
 };
 
+// GET REVIEWS ---------------------------
 exports.getReviews = (params, client, release, callback) => {
   // Build query string
   const {
@@ -62,5 +63,34 @@ exports.getReviews = (params, client, release, callback) => {
       };
       callback(null, result);
     })
-    .catch((err) => callback(err.stack));
+    .catch((err) => callback(err.stack))
+    .finally(release());
+};
+
+// GET METADATA ---------------------------
+exports.getMetadata = (product_id, client, release, callback) => {
+  // Build query string
+  const query = format(
+    'SELECT '
+    + 'GROUP BY r.review_id ',
+    product_id,
+  );
+
+  // Perform initial query
+  console.log(query);
+  client.query(query)
+    .then((res) => {
+      const results = res.rows.map((review) => (
+        review.photos.length === 1 && !review.photos[0].url ? { ...review, photos: [] } : review
+      ));
+      const result = {
+        product: product_id,
+        page: parseInt(page, 10),
+        count: parseInt(count, 10),
+        results,
+      };
+      callback(null, result);
+    })
+    .catch((err) => callback(err.stack))
+    .finally(release());
 };

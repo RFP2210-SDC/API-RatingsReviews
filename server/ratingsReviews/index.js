@@ -34,6 +34,22 @@ app.get('/reviews', (req, res) => {
   });
 });
 
+app.get('/reviews/meta', (req, res) => {
+  db.getConnection((error, client, release) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      db.getMetadata(req.query.product_id, client, release, (err, metadata) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.status(200).send(metadata);
+        }
+      });
+    }
+  });
+});
+
 // PORT AND SERVER LISTEN
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
