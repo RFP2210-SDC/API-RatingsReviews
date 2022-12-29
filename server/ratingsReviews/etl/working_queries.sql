@@ -2,8 +2,8 @@
 
 SELECT r.review_id, rating, summary, recommend, response, body, date, reviewer_name,
   helpfulness, JSONB_AGG(JSONB_BUILD_OBJECT('id', id, 'url', url) ORDER BY id) AS photos
-  FROM orig_reviews AS r
-  LEFT JOIN orig_reviews_photos AS p ON r.review_id=p.review_id
+  FROM reviews AS r
+  LEFT JOIN reviews_photos AS p ON r.review_id=p.review_id
   WHERE product_id=1 AND reported=false
   GROUP BY r.review_id
   ORDER BY helpfulness-(extract(epoch from now())::INTEGER
@@ -15,9 +15,9 @@ SELECT r.review_id, rating, summary, recommend, response, body, date, reviewer_n
 
 SELECT c.product_id,
   JSONB_OBJECT_AGG(c.name, JSONB_BUILD_OBJECT('id', c.id, 'value', cr.value)) AS characteristics
-  FROM orig_reviews AS r
-  JOIN orig_characteristic_reviews AS cr ON r.review_id=cr.review_id
-  JOIN orig_characteristics AS c ON c.id=cr.characteristic_id
+  FROM reviews AS r
+  JOIN characteristic_reviews AS cr ON r.review_id=cr.review_id
+  JOIN characteristics AS c ON c.id=cr.characteristic_id
   WHERE c.product_id=1
   GROUP BY c.product_id;
 
@@ -25,9 +25,9 @@ SELECT c.product_id,
 
 SELECT r.review_id,
   JSONB_OBJECT_AGG(c.name, JSONB_BUILD_OBJECT('id', c.id, 'value', cr.value)) AS characteristics
-  FROM orig_reviews AS r
-  JOIN orig_characteristic_reviews AS cr ON r.review_id=cr.review_id
-  JOIN orig_characteristics AS c ON c.id=cr.characteristic_id
+  FROM reviews AS r
+  JOIN characteristic_reviews AS cr ON r.review_id=cr.review_id
+  JOIN characteristics AS c ON c.id=cr.characteristic_id
   WHERE c.product_id=1
   GROUP BY r.review_id;
 
@@ -35,9 +35,9 @@ SELECT r.review_id,
 -- 2 | {"Fit": {"id": 1, "value": 4}, "Length": {"id": 2, "value": 4}, "Comfort": {"id": 3, "value": 5}, "Quality": {"id": 4, "value": 4}}
 
 SELECT c.name, JSONB_BUILD_OBJECT('id', c.id, 'value', AVG(cr.value)) AS characteristics
-  FROM orig_reviews AS r
-  JOIN orig_characteristic_reviews AS cr ON r.review_id=cr.review_id
-  JOIN orig_characteristics AS c ON c.id=cr.characteristic_id
+  FROM reviews AS r
+  JOIN characteristic_reviews AS cr ON r.review_id=cr.review_id
+  JOIN characteristics AS c ON c.id=cr.characteristic_id
   WHERE c.product_id=1
   GROUP BY c.id, c.name;
 
@@ -50,9 +50,9 @@ SELECT s.product_id, JSONB_OBJECT_AGG(name, characteristics) AS characteristics
   FROM (
     SELECT c.product_id, c.name,
       JSONB_BUILD_OBJECT('id', c.id, 'value', ROUND(AVG(cr.value),4)) AS characteristics
-      FROM orig_reviews AS r
-      JOIN orig_characteristic_reviews AS cr ON r.review_id=cr.review_id
-      JOIN orig_characteristics AS c ON c.id=cr.characteristic_id
+      FROM reviews AS r
+      JOIN characteristic_reviews AS cr ON r.review_id=cr.review_id
+      JOIN characteristics AS c ON c.id=cr.characteristic_id
       WHERE c.product_id=403
       GROUP BY c.id, c.name
   ) AS s
@@ -62,8 +62,8 @@ SELECT s.product_id::text, JSONB_OBJECT_AGG(name, characteristics) AS characteri
   FROM (
     SELECT c.product_id, c.name,
       JSONB_BUILD_OBJECT('id', c.id, 'value', ROUND(AVG(cr.value),4)) AS characteristics
-      FROM orig_characteristic_reviews AS cr
-      JOIN orig_characteristics AS c ON c.id=cr.characteristic_id
+      FROM characteristic_reviews AS cr
+      JOIN characteristics AS c ON c.id=cr.characteristic_id
       WHERE c.product_id=1
       GROUP BY c.id, c.name
   ) AS s
@@ -73,15 +73,15 @@ SELECT s.product_id::text, JSONB_OBJECT_AGG(name, characteristics) AS characteri
 
 -- FOR VIEWING DATA
 SELECT r.review_id, c.name, cr.value
-  FROM orig_reviews AS r
-  JOIN orig_characteristics AS c ON c.product_id=r.product_id
-  JOIN orig_characteristic_reviews AS cr ON c.id=cr.characteristic_id
+  FROM reviews AS r
+  JOIN characteristics AS c ON c.product_id=r.product_id
+  JOIN characteristic_reviews AS cr ON c.id=cr.characteristic_id
   WHERE c.product_id=1
 
 SELECT r.review_id, c.name, cr.value
-  FROM orig_reviews AS r
-  JOIN orig_characteristic_reviews AS cr ON r.review_id=cr.review_id
-  JOIN orig_characteristics AS c ON c.id=cr.characteristic_id
+  FROM reviews AS r
+  JOIN characteristic_reviews AS cr ON r.review_id=cr.review_id
+  JOIN characteristics AS c ON c.id=cr.characteristic_id
   WHERE c.product_id=1;
 
 
@@ -91,7 +91,7 @@ SELECT r.review_id, c.name, cr.value
 SELECT JSONB_OBJECT_AGG(rating, ratings::text) AS ratings
 FROM (
   SELECT product_id, rating, COUNT(rating) AS ratings
-    FROM orig_reviews AS r
+    FROM reviews AS r
     WHERE product_id=79
     GROUP BY rating, product_id
 ) AS s
@@ -105,16 +105,24 @@ GROUP BY s.product_id;
 SELECT JSONB_OBJECT_AGG(recommend, recommendCnt::text) AS recommended
 FROM (
   SELECT product_id, recommend, COUNT(recommend) AS recommendCnt
-    FROM orig_reviews AS r
+    FROM reviews AS r
     WHERE product_id=79
     GROUP BY product_id, recommend
 ) AS s
 GROUP BY s.product_id;
 
--- ^^^^^ BEST OPTION SO FAR FOR RECOMMEND
-
 -- WORKING ON PUT HELPFULNESS
 
-UPDATE orig_reviews
+UPDATE reviews
 SET helpfulness = helpfulness + 1
 WHERE review_id=1;
+
+-- WORKING ON POST REVIEW: REVIEW QUERY
+
+INSERT INTO reviews (product_id, rating, date, summary, body, recommend, reviewer_name, reviewer_email)
+  VALUES (10, 5, NOW(), 'greatest product ever!', 'best purchase of all time, thanks!', true, 'chad', 'a@aol.com');
+
+-- WORKING ON POST REVIEW: REVIEWS_PHOTOS QUERY
+
+INSERT INTO reviews (review_id, url)
+  VALUES (10, 5, NOW(), 'greatest product ever!', 'best purchase of all time, thanks!', true, 'chad', 'a@aol.com');

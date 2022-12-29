@@ -15,13 +15,16 @@ exports.getConnection = (cb) => {
   });
 };
 
-// PUT HELPFULNESS ---------------------------
-exports.updateHelpfulness = (review_id, client, release, callback) => {
+// PUT HELPFULNESS & REPORTED ---------------------------
+exports.update = (review_id, reportHelp, client, release, callback) => {
   // Build query string
+  const setClause = reportHelp[0] === 'h' ? `${reportHelp} = ${reportHelp} + 1 `
+    : `${reportHelp} = true `;
   const query = format(
-    'UPDATE orig_reviews '
-    + 'SET helpfulness = helpfulness + 1 '
+    'UPDATE reviews '
+    + 'SET %s '
     + 'WHERE review_id=%s;',
+    setClause,
     review_id,
   );
 
@@ -56,8 +59,8 @@ exports.getReviews = (params, client, release, callback) => {
   const query = format(
     'SELECT r.review_id, rating, summary, recommend, response, body, date, reviewer_name, '
     + 'helpfulness, JSONB_AGG(JSONB_BUILD_OBJECT(\'id\', id, \'url\', url) ORDER BY id) AS photos '
-    + 'FROM orig_reviews AS r '
-    + 'LEFT JOIN orig_reviews_photos AS p ON r.review_id=p.review_id '
+    + 'FROM reviews AS r '
+    + 'LEFT JOIN reviews_photos AS p ON r.review_id=p.review_id '
     + 'WHERE product_id=%s AND reported=false '
     + 'GROUP BY r.review_id '
     + 'ORDER BY %s LIMIT %s OFFSET %s;',
@@ -66,6 +69,7 @@ exports.getReviews = (params, client, release, callback) => {
     count,
     offset,
   );
+  console.log('query:', query);
 
   // Perform query
   client.query(query)
@@ -93,8 +97,8 @@ exports.getMetadata = (product_id, client, release, callback) => {
     + 'FROM ('
       + 'SELECT c.product_id, c.name, '
       + 'JSONB_BUILD_OBJECT(\'id\', c.id, \'value\', ROUND(AVG(cr.value),4)) AS characteristics '
-      + 'FROM orig_characteristic_reviews AS cr '
-      + 'JOIN orig_characteristics AS c ON c.id=cr.characteristic_id '
+      + 'FROM characteristic_reviews AS cr '
+      + 'JOIN characteristics AS c ON c.id=cr.characteristic_id '
       + 'WHERE c.product_id=%s '
       + 'GROUP BY c.id, c.name'
     + ') AS s '
@@ -106,7 +110,7 @@ exports.getMetadata = (product_id, client, release, callback) => {
     'SELECT JSONB_OBJECT_AGG(rating, ratings::text) AS ratings '
     + 'FROM ('
       + 'SELECT product_id, rating, COUNT(rating) AS ratings '
-      + 'FROM orig_reviews AS r '
+      + 'FROM reviews AS r '
       + 'WHERE product_id=%s '
       + 'GROUP BY rating, product_id'
     + ') AS s '
@@ -118,7 +122,7 @@ exports.getMetadata = (product_id, client, release, callback) => {
     'SELECT JSONB_OBJECT_AGG(recommend, recommendCnt::text) AS recommended '
     + 'FROM ('
       + 'SELECT product_id, recommend, COUNT(recommend) AS recommendCnt '
-      + 'FROM orig_reviews AS r '
+      + 'FROM reviews AS r '
       + 'WHERE product_id=%s '
       + 'GROUP BY product_id, recommend '
     + ') AS s '
@@ -141,6 +145,58 @@ exports.getMetadata = (product_id, client, release, callback) => {
       Object.assign(results, res.rows[0]);
       callback(null, results);
     })
+    .catch((err) => callback(err.stack))
+    .finally(release());
+};
+
+// POST REVIEW ---------------------------
+exports.postReview = (params, client, release, callback) => {
+  // Build query strings
+  const {
+    product_id, rating, summary, body, recommend, name, email, photos, characteristics,
+  } = params;
+
+  const reviewQuery = format(
+    'INSERT INTO reviews (product_id, rating, date, summary, body, recommend, '
+      + 'reviewer_name, reviewer_email) '
+      + 'VALUES (%s, %s, NOW(), %L, %L, %L, %L, %L) '
+      + 'RETURNING review_id;', // returning review_id because we don't know what it is apriori.
+    product_id,
+    rating,
+    summary,
+    body,
+    recommend,
+    name,
+    email,
+  );
+
+  function buildPhotosQuery(review_id) {
+    const values = photos.map((url) => ([review_id, url]));
+    return format(
+      'INSERT INTO reviews_photos (review_id, url) '
+        + 'VALUES %L '
+        + 'RETURNING review_id;',
+      values,
+    );
+  }
+
+  function buildCharReviewsQuery(review_id) {
+    const values = Object.entries(characteristics).map((entry) => {
+      entry.push(review_id);
+      return entry;
+    });
+    return format(
+      'INSERT INTO characteristic_reviews (characteristic_id, value, review_id) '
+        + 'VALUES %L;',
+      values,
+    );
+  }
+
+  // Perform queries
+  client.query(reviewQuery)
+    .then((res) => (client.query(buildPhotosQuery(res.rows[0].review_id))))
+    .then((res) => (client.query(buildCharReviewsQuery(res.rows[0].review_id))))
+    .then(() => (callback(null)))
     .catch((err) => callback(err.stack))
     .finally(release());
 };

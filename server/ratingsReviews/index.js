@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 // REQUIRE STATEMENTS
 require('dotenv').config();
 const express = require('express');
@@ -18,6 +17,38 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(compression());
 
 // ROUTES
+app.put('/reviews/:review_id/helpful', (req, res) => {
+  db.getConnection((error, client, release) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      db.update(req.params.review_id, 'helpfulness', client, release, (err) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.sendStatus(204);
+        }
+      });
+    }
+  });
+});
+
+app.put('/reviews/:review_id/report', (req, res) => {
+  db.getConnection((error, client, release) => {
+    if (error) {
+      res.status(400).send(error);
+    } else {
+      db.update(req.params.review_id, 'reported', client, release, (err) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.sendStatus(204);
+        }
+      });
+    }
+  });
+});
+
 app.get('/reviews', (req, res) => {
   db.getConnection((error, client, release) => {
     if (error) {
@@ -50,20 +81,25 @@ app.get('/reviews/meta', (req, res) => {
   });
 });
 
-app.put('/reviews/:review_id/helpful', (req, res) => {
-  db.getConnection((error, client, release) => {
-    if (error) {
-      res.status(400).send(error);
-    } else {
-      db.updateHelpfulness(req.params.review_id, client, release, (err) => {
-        if (err) {
-          res.status(400).send(err);
-        } else {
-          res.sendStatus(204);
-        }
-      });
-    }
-  });
+app.post('/reviews', (req, res) => {
+  const emailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}/;
+  if (emailPattern.test(req.body.email)) {
+    res.status(400).send('invalid email address');
+  } else {
+    db.getConnection((error, client, release) => {
+      if (error) {
+        res.status(400).send(error);
+      } else {
+        db.postReview(req.body, client, release, (err) => {
+          if (err) {
+            res.status(400).send(err);
+          } else {
+            res.sendStatus(201);
+          }
+        });
+      }
+    });
+  }
 });
 
 // PORT AND SERVER LISTEN
