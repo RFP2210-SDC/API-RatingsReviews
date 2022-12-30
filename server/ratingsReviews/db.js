@@ -3,7 +3,11 @@
 const { Pool } = require('pg');
 const format = require('pg-format');
 
-const pool = new Pool();
+const [reviews, reviewPhotos, chars, charReviews] = process.env.NODE_ENV === 'test'
+  ? ['test_reviews', 'test_reviews_photos', 'test_characteristics', 'test_characteristic_reviews']
+  : ['reviews', 'reviews_photos', 'characteristics', 'characteristic_reviews'];
+
+const pool = new Pool({ idleTimeoutMillis: 30000 });
 
 exports.getConnection = (cb) => {
   pool.connect((err, client, release) => {
@@ -21,9 +25,10 @@ exports.update = (review_id, reportHelp, client, release, callback) => {
   const setClause = reportHelp[0] === 'h' ? `${reportHelp} = ${reportHelp} + 1 `
     : `${reportHelp} = true `;
   const query = format(
-    'UPDATE reviews '
+    'UPDATE %s '
     + 'SET %s '
     + 'WHERE review_id=%s;',
+    reviews,
     setClause,
     review_id,
   );
@@ -59,11 +64,13 @@ exports.getReviews = (params, client, release, callback) => {
   const query = format(
     'SELECT r.review_id, rating, summary, recommend, response, body, date, reviewer_name, '
     + 'helpfulness, JSONB_AGG(JSONB_BUILD_OBJECT(\'id\', id, \'url\', url) ORDER BY id) AS photos '
-    + 'FROM reviews AS r '
-    + 'LEFT JOIN reviews_photos AS p ON r.review_id=p.review_id '
+    + 'FROM %s AS r '
+    + 'LEFT JOIN %s AS p ON r.review_id=p.review_id '
     + 'WHERE product_id=%s AND reported=false '
     + 'GROUP BY r.review_id '
     + 'ORDER BY %s LIMIT %s OFFSET %s;',
+    reviews,
+    reviewPhotos,
     product_id,
     sortOrder,
     count,
@@ -97,12 +104,14 @@ exports.getMetadata = (product_id, client, release, callback) => {
     + 'FROM ('
       + 'SELECT c.product_id, c.name, '
       + 'JSONB_BUILD_OBJECT(\'id\', c.id, \'value\', ROUND(AVG(cr.value),4)) AS characteristics '
-      + 'FROM characteristic_reviews AS cr '
-      + 'JOIN characteristics AS c ON c.id=cr.characteristic_id '
+      + 'FROM %s AS cr '
+      + 'JOIN %s AS c ON c.id=cr.characteristic_id '
       + 'WHERE c.product_id=%s '
       + 'GROUP BY c.id, c.name'
     + ') AS s '
     + 'GROUP BY s.product_id;',
+    charReviews,
+    chars,
     product_id,
   );
 
@@ -110,11 +119,12 @@ exports.getMetadata = (product_id, client, release, callback) => {
     'SELECT JSONB_OBJECT_AGG(rating, ratings::text) AS ratings '
     + 'FROM ('
       + 'SELECT product_id, rating, COUNT(rating) AS ratings '
-      + 'FROM reviews AS r '
+      + 'FROM %s AS r '
       + 'WHERE product_id=%s '
       + 'GROUP BY rating, product_id'
     + ') AS s '
     + 'GROUP BY s.product_id;',
+    reviews,
     product_id,
   );
 
@@ -122,11 +132,12 @@ exports.getMetadata = (product_id, client, release, callback) => {
     'SELECT JSONB_OBJECT_AGG(recommend, recommendCnt::text) AS recommended '
     + 'FROM ('
       + 'SELECT product_id, recommend, COUNT(recommend) AS recommendCnt '
-      + 'FROM reviews AS r '
+      + 'FROM %s AS r '
       + 'WHERE product_id=%s '
       + 'GROUP BY product_id, recommend '
     + ') AS s '
     + 'GROUP BY s.product_id;',
+    reviews,
     product_id,
   );
 
@@ -135,14 +146,19 @@ exports.getMetadata = (product_id, client, release, callback) => {
   client.query(characterQuery)
     .then((res) => {
       Object.assign(results, res.rows[0]);
+      console.log('results inside 1st then:', results);
+      console.log('ratingsQuery:', ratingsQuery);
       return client.query(ratingsQuery);
     })
     .then((res) => {
       Object.assign(results, res.rows[0]);
+      console.log('results inside 2nd then:', results);
+      console.log('recommendQuery:', recommendQuery);
       return client.query(recommendQuery);
     })
     .then((res) => {
       Object.assign(results, res.rows[0]);
+      console.log('results inside 3rd then:', results);
       callback(null, results);
     })
     .catch((err) => callback(err.stack))
@@ -157,10 +173,11 @@ exports.postReview = (params, client, release, callback) => {
   } = params;
 
   const reviewQuery = format(
-    'INSERT INTO reviews (product_id, rating, date, summary, body, recommend, '
+    'INSERT INTO %s (product_id, rating, date, summary, body, recommend, '
       + 'reviewer_name, reviewer_email) '
       + 'VALUES (%s, %s, NOW(), %L, %L, %L, %L, %L) '
       + 'RETURNING review_id;', // returning review_id because we don't know what it is apriori.
+    reviews,
     product_id,
     rating,
     summary,
@@ -173,9 +190,10 @@ exports.postReview = (params, client, release, callback) => {
   function buildPhotosQuery(review_id) {
     const values = photos.map((url) => ([review_id, url]));
     return format(
-      'INSERT INTO reviews_photos (review_id, url) '
+      'INSERT INTO %s (review_id, url) '
         + 'VALUES %L '
         + 'RETURNING review_id;',
+      reviewPhotos,
       values,
     );
   }
@@ -186,8 +204,9 @@ exports.postReview = (params, client, release, callback) => {
       return entry;
     });
     return format(
-      'INSERT INTO characteristic_reviews (characteristic_id, value, review_id) '
+      'INSERT INTO %s (characteristic_id, value, review_id) '
         + 'VALUES %L;',
+      charReviews,
       values,
     );
   }

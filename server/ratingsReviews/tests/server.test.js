@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 // After running "npm test", open up coverage/lcov-report/index.html to see full coverage report.
+process.env.NODE_ENV = 'test';
 const request = require('supertest');
 const db = require('../db');
 const app = require('../server');
@@ -8,19 +9,20 @@ let client;
 let release;
 
 function dropTbls() {
-  return client.query('DROP TABLE test_characteristic_reviews')
-    .then(() => (client.query('DROP TABLE test_reviews_photos')))
-    .then(() => (client.query('DROP TABLE test_characteristics')))
-    .then(() => (client.query('DROP TABLE test_reviews')));
+  return client.query('DROP TABLE IF EXISTS test_characteristic_reviews')
+    .then(() => (client.query('DROP TABLE IF EXISTS test_reviews_photos')))
+    .then(() => (client.query('DROP TABLE IF EXISTS test_characteristics')))
+    .then(() => (client.query('DROP TABLE IF EXISTS test_reviews')));
 }
 
-beforeAll(() => {
-  db.getConnection((err, dbClient, dbRelease) => {
+beforeAll(async () => {
+  await db.getConnection((err, dbClient, dbRelease) => {
     if (err) {
       console.log('database connection failed');
     } else {
       client = dbClient;
       release = dbRelease;
+      console.log('inside beforeAll');
       dropTbls()
         .then(() => (client.query('CREATE TABLE test_reviews '
         + '(LIKE reviews INCLUDING ALL)')))
@@ -34,15 +36,16 @@ beforeAll(() => {
           + 'VALUES (1, "Fit"), (1, "Length"), (1, "Comfort"), (1, "Quality"), (2, "Quality")')));
     }
   });
-});
+}, 30000);
 
-afterAll(async () => {
+afterAll(() => {
   dropTbls()
     .finally(release());
 });
 
 describe('POST /reviews ', () => {
   test('It should respond with status code 201 when posting review', async () => {
+    console.log('inside POST review test');
     const response = await request(app).post('/reviews')
       .send({
         product_id: 1,
@@ -61,14 +64,14 @@ describe('POST /reviews ', () => {
   });
 });
 
-test('It adds two numbers', () => {
-  expect(1 + 1).toBe(2);
-});
+// test('It adds two numbers', () => {
+//   expect(1 + 1).toBe(2);
+// });
 
-describe('GET / ', () => {
-  test('It should respond with an array of students', async () => {
-    const response = await request(app).get('/students');
-    expect(response.body).toEqual(['Elie', 'Matt', 'Joel', 'Michael']);
-    expect(response.statusCode).toBe(200);
-  });
-});
+// describe('GET / ', () => {
+//   test('It should respond with an array of students', async () => {
+//     const response = await request(app).get('/students');
+//     expect(response.body).toEqual(['Elie', 'Matt', 'Joel', 'Michael']);
+//     expect(response.statusCode).toBe(200);
+//   });
+// });

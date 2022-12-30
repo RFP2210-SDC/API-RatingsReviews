@@ -52,13 +52,13 @@ CREATE TABLE reviews (
   reported BOOLEAN DEFAULT false,
   reviewer_name TEXT,
   reviewer_email TEXT,
-  response TEXT DEFAULT,
+  response TEXT DEFAULT null,
   helpfulness INT DEFAULT 0
 );
 
 CREATE TABLE reviews_photos (
   id SERIAL PRIMARY KEY,
-  review_id INT REFERENCES reviews(review_id),
+  review_id INT,
   url TEXT
 );
 
@@ -70,8 +70,8 @@ CREATE TABLE characteristics (
 
 CREATE TABLE characteristic_reviews (
   id SERIAL PRIMARY KEY,
-  characteristic_id INT REFERENCES characteristics(id),
-  review_id INT REFERENCES reviews(review_id),
+  characteristic_id INT,
+  review_id INT,
   value INT
 );
 
