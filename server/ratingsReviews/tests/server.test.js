@@ -1,9 +1,8 @@
 /* eslint-disable no-undef */
 // After running "npm test", open up coverage/lcov-report/index.html to see full coverage report.
 process.env.NODE_ENV = 'test';
-const request = require('supertest');
+const request = require('supertest')('http://localhost:3000');
 const { db } = require('../db');
-const app = require('../server');
 
 beforeAll(async () => {
   await db.query('DROP TABLE IF EXISTS test_characteristic_reviews');
@@ -30,7 +29,7 @@ afterAll(async () => {
 
 describe('POST /reviews ', () => {
   test('It should respond with status code 201 when posting review', async () => {
-    const response = await request(app).post('/reviews')
+    const response = await request.post('/reviews')
       .send({
         product_id: 1,
         rating: 1,
