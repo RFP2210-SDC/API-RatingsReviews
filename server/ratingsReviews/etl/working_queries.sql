@@ -121,8 +121,3 @@ WHERE review_id=1;
 
 INSERT INTO reviews (product_id, rating, date, summary, body, recommend, reviewer_name, reviewer_email)
   VALUES (10, 5, NOW(), 'greatest product ever!', 'best purchase of all time, thanks!', true, 'chad', 'a@aol.com');
-
--- WORKING ON POST REVIEW: REVIEWS_PHOTOS QUERY
-
-INSERT INTO reviews (review_id, url)
-  VALUES (10, 5, NOW(), 'greatest product ever!', 'best purchase of all time, thanks!', true, 'chad', 'a@aol.com');

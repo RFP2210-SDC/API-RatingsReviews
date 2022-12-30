@@ -48,15 +48,3 @@ describe('POST /reviews ', () => {
     expect(response.statusCode).toBe(201);
   });
 });
-
-test('It adds two numbers', () => {
-  expect(1 + 1).toBe(2);
-});
-
-// describe('GET / ', () => {
-//   test('It should respond with an array of students', async () => {
-//     const response = await request(app).get('/students');
-//     expect(response.body).toEqual(['Elie', 'Matt', 'Joel', 'Michael']);
-//     expect(response.statusCode).toBe(200);
-//   });
-// });

@@ -102,8 +102,4 @@ app.post('/reviews', (req, res) => {
   }
 });
 
-const students = ['Elie', 'Matt', 'Joel', 'Michael'];
-
-app.get('/students', (req, res) => (res.json(students)));
-
 module.exports = app;
