@@ -1,51 +1,36 @@
 /* eslint-disable no-undef */
 // After running "npm test", open up coverage/lcov-report/index.html to see full coverage report.
 process.env.NODE_ENV = 'test';
+// const Promise = require('bluebird');
 const request = require('supertest');
-const db = require('../db');
+const { db } = require('../db');
 const app = require('../server');
 
-let client;
-let release;
-
-function dropTbls() {
-  return client.query('DROP TABLE IF EXISTS test_characteristic_reviews')
-    .then(() => (client.query('DROP TABLE IF EXISTS test_reviews_photos')))
-    .then(() => (client.query('DROP TABLE IF EXISTS test_characteristics')))
-    .then(() => (client.query('DROP TABLE IF EXISTS test_reviews')));
-}
+// Promise.promisifyAll(db);
 
 beforeAll(async () => {
-  await db.getConnection((err, dbClient, dbRelease) => {
-    if (err) {
-      console.log('database connection failed');
-    } else {
-      client = dbClient;
-      release = dbRelease;
-      console.log('inside beforeAll');
-      dropTbls()
-        .then(() => (client.query('CREATE TABLE test_reviews '
-        + '(LIKE reviews INCLUDING ALL)')))
-        .then(() => (client.query('CREATE TABLE test_characteristics '
-          + '(LIKE characteristics INCLUDING ALL)')))
-        .then(() => (client.query('CREATE TABLE test_reviews_photos '
-          + '(LIKE reviews_photos INCLUDING ALL)')))
-        .then(() => (client.query('CREATE TABLE test_characteristic_reviews '
-          + '(LIKE characteristic_reviews INCLUDING ALL)')))
-        .then(() => (client.query('INSERT INTO test_characteristics (product_id, name) '
-          + 'VALUES (1, "Fit"), (1, "Length"), (1, "Comfort"), (1, "Quality"), (2, "Quality")')));
-    }
-  });
+  await db.query('DROP TABLE IF EXISTS test_characteristic_reviews');
+  await db.query('DROP TABLE IF EXISTS test_reviews_photos');
+  await db.query('DROP TABLE IF EXISTS test_characteristics');
+  await db.query('DROP TABLE IF EXISTS test_reviews');
+  await db.query('CREATE TABLE test_reviews (LIKE reviews INCLUDING ALL)');
+  await db.query('CREATE TABLE test_characteristics (LIKE characteristics INCLUDING ALL)');
+  await db.query('CREATE TABLE test_reviews_photos (LIKE reviews_photos INCLUDING ALL)');
+  await db.query('CREATE TABLE test_characteristic_reviews (LIKE characteristic_reviews INCLUDING ALL)');
+  await db.query('INSERT INTO test_characteristics (product_id, name) '
+      + "VALUES (1, 'Fit'), (1, 'Length'), (1, 'Comfort'), (1, 'Quality'), (2, 'Quality')");
 }, 30000);
 
 afterAll(() => {
-  dropTbls()
-    .finally(release());
+  db.query('DROP TABLE IF EXISTS test_characteristic_reviews')
+    .then(() => (db.query('DROP TABLE IF EXISTS test_reviews_photos')))
+    .then(() => (db.query('DROP TABLE IF EXISTS test_characteristics')))
+    .then(() => (db.query('DROP TABLE IF EXISTS test_reviews')))
+    .finally(() => (db.end()));
 });
 
 describe('POST /reviews ', () => {
   test('It should respond with status code 201 when posting review', async () => {
-    console.log('inside POST review test');
     const response = await request(app).post('/reviews')
       .send({
         product_id: 1,
@@ -64,9 +49,9 @@ describe('POST /reviews ', () => {
   });
 });
 
-// test('It adds two numbers', () => {
-//   expect(1 + 1).toBe(2);
-// });
+test('It adds two numbers', () => {
+  expect(1 + 1).toBe(2);
+});
 
 // describe('GET / ', () => {
 //   test('It should respond with an array of students', async () => {

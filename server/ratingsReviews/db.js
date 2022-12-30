@@ -1,11 +1,20 @@
 /* eslint-disable camelcase */
 /* eslint-disable consistent-return */
-const { Pool } = require('pg');
+const { Client, Pool } = require('pg');
 const format = require('pg-format');
 
 const [reviews, reviewPhotos, chars, charReviews] = process.env.NODE_ENV === 'test'
   ? ['test_reviews', 'test_reviews_photos', 'test_characteristics', 'test_characteristic_reviews']
   : ['reviews', 'reviews_photos', 'characteristics', 'characteristic_reviews'];
+
+// const testClient = new Client();
+const testClient = new Client({ database: 'reviews' });
+
+if (process.env.NODE_ENV === 'test') {
+  testClient.connect();
+}
+
+exports.db = testClient;
 
 const pool = new Pool({ idleTimeoutMillis: 30000 });
 
@@ -39,7 +48,7 @@ exports.update = (review_id, reportHelp, client, release, callback) => {
       callback(null);
     })
     .catch((err) => callback(err.stack))
-    .finally(release());
+    .finally(() => (release()));
 };
 
 // GET REVIEWS ---------------------------
@@ -93,7 +102,7 @@ exports.getReviews = (params, client, release, callback) => {
       callback(null, result);
     })
     .catch((err) => callback(err.stack))
-    .finally(release());
+    .finally(() => (release()));
 };
 
 // GET METADATA ---------------------------
@@ -162,7 +171,7 @@ exports.getMetadata = (product_id, client, release, callback) => {
       callback(null, results);
     })
     .catch((err) => callback(err.stack))
-    .finally(release());
+    .finally(() => (release()));
 };
 
 // POST REVIEW ---------------------------
@@ -217,5 +226,5 @@ exports.postReview = (params, client, release, callback) => {
     .then((res) => (client.query(buildCharReviewsQuery(res.rows[0].review_id))))
     .then(() => (callback(null)))
     .catch((err) => callback(err.stack))
-    .finally(release());
+    .finally(() => (release()));
 };
