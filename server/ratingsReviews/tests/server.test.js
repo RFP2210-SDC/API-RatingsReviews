@@ -1,11 +1,17 @@
 /* eslint-disable no-undef */
 // After running "npm test", open up coverage/lcov-report/index.html to see full coverage report.
 process.env.NODE_ENV = 'test';
+const app = require('../server');
+// eslint-disable-next-line import/order
 const request = require('supertest');
 const { db } = require('../db');
-const app = require('../server');
+
+let server;
+let agent;
 
 beforeAll(async () => {
+  server = await app.listen(4000);
+  agent = await request.agent(server);
   await db.query('DROP TABLE IF EXISTS test_characteristic_reviews');
   await db.query('DROP TABLE IF EXISTS test_reviews_photos');
   await db.query('DROP TABLE IF EXISTS test_characteristics');
@@ -22,15 +28,14 @@ afterAll(async () => {
   await db.query('DROP TABLE IF EXISTS test_characteristic_reviews');
   await db.query('DROP TABLE IF EXISTS test_reviews_photos');
   await db.query('DROP TABLE IF EXISTS test_characteristics');
-  console.log('INSIDE LAST AFTER ALL DROP');
   await db.query('DROP TABLE IF EXISTS test_reviews');
-  console.log('INSIDE FINALLY');
+  await server.close();
   return db.end();
 });
 
 describe('POST /reviews ', () => {
   test('It should respond with status code 201 when posting review', async () => {
-    const response = await request(app).post('/reviews')
+    const response = await agent.post('/reviews')
       .send({
         product_id: 1,
         rating: 1,
@@ -44,7 +49,6 @@ describe('POST /reviews ', () => {
           1: 1, 2: 1, 3: 1, 4: 1,
         },
       });
-    console.log('inside POST test');
     expect(response.statusCode).toBe(201);
   });
 });
