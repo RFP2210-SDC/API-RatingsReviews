@@ -54,9 +54,9 @@ exports.update = (review_id, reportHelp, client, release, callback) => {
 // GET REVIEWS ---------------------------
 exports.getReviews = (params, client, release, callback) => {
   // Build query string
-  const {
-    product_id, sort, page, count,
-  } = params;
+  const { product_id, sort } = params;
+  const page = params.page || 1;
+  const count = params.count || 5;
   const offset = (page - 1) * count;
 
   let sortOrder;
@@ -85,7 +85,6 @@ exports.getReviews = (params, client, release, callback) => {
     count,
     offset,
   );
-  console.log('query:', query);
 
   // Perform query
   client.query(query)
@@ -155,19 +154,14 @@ exports.getMetadata = (product_id, client, release, callback) => {
   client.query(characterQuery)
     .then((res) => {
       Object.assign(results, res.rows[0]);
-      console.log('results inside 1st then:', results);
-      console.log('ratingsQuery:', ratingsQuery);
       return client.query(ratingsQuery);
     })
     .then((res) => {
       Object.assign(results, res.rows[0]);
-      console.log('results inside 2nd then:', results);
-      console.log('recommendQuery:', recommendQuery);
       return client.query(recommendQuery);
     })
     .then((res) => {
       Object.assign(results, res.rows[0]);
-      console.log('results inside 3rd then:', results);
       callback(null, results);
     })
     .catch((err) => callback(err.stack))

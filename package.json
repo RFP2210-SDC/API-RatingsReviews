@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon server/ratingsReviews/index.js",
     "regen": "psql reviews < server/ratingsReviews/etl/regenTbls.sql",
-    "test": "jest --detectOpenHandles",
+    "test": "jest --forceExit",
     "log": "code /opt/homebrew/var/log/postgresql@14.log"
   },
   "dependencies": {
