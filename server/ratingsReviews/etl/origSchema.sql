@@ -58,7 +58,7 @@ CREATE TABLE reviews (
 
 CREATE TABLE reviews_photos (
   id SERIAL PRIMARY KEY,
-  review_id INT,
+  review_id INT REFERENCES reviews(review_id),
   url TEXT
 );
 
@@ -70,8 +70,8 @@ CREATE TABLE characteristics (
 
 CREATE TABLE characteristic_reviews (
   id SERIAL PRIMARY KEY,
-  characteristic_id INT,
-  review_id INT,
+  characteristic_id INT REFERENCES characteristics(id),
+  review_id INT REFERENCES reviews(review_id),
   value INT
 );
 
