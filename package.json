@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Online shopping portal",
   "scripts": {
-    "start": "nodemon server/ratingsReviews/index.js"
+    "start": "nodemon server/ratingsReviews/index.js",
+    "regen": "psql reviews < server/ratingsReviews/etl/regenTbls.sql",
+    "test": "jest"
   },
   "dependencies": {
     "axios": "^1.2.1",
@@ -22,6 +24,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.31.11",
-    "eslint-plugin-react-hooks": "^4.6.0"
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jest": "^29.3.1",
+    "supertest": "^6.3.3"
   }
 }
