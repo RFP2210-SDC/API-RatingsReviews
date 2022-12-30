@@ -1,7 +1,7 @@
-DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS characteristic_reviews;
 DROP TABLE IF EXISTS reviews_photos;
 DROP TABLE IF EXISTS characteristics;
-DROP TABLE IF EXISTS characteristic_reviews;
+DROP TABLE IF EXISTS reviews;
 
 CREATE TABLE reviews (
   review_id SERIAL PRIMARY KEY,

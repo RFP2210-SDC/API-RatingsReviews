@@ -1,11 +1,11 @@
-DROP TABLE IF EXISTS orig_reviews;
+DROP TABLE IF EXISTS orig_characteristic_reviews;
 DROP TABLE IF EXISTS orig_reviews_photos;
 DROP TABLE IF EXISTS orig_characteristics;
-DROP TABLE IF EXISTS orig_characteristic_reviews;
-DROP TABLE IF EXISTS reviews;
+DROP TABLE IF EXISTS orig_reviews;
+DROP TABLE IF EXISTS characteristic_reviews;
 DROP TABLE IF EXISTS reviews_photos;
 DROP TABLE IF EXISTS characteristics;
-DROP TABLE IF EXISTS characteristic_reviews;
+DROP TABLE IF EXISTS reviews;
 
 CREATE TABLE orig_reviews (
   review_id INT PRIMARY KEY,
