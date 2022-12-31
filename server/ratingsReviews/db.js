@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === 'test') {
 
 exports.db = testClient;
 
-const pool = new Pool({ idleTimeoutMillis: 30000 });
+const pool = new Pool({ idleTimeoutMillis: 30000, max: 100 });
 
 exports.getConnection = (cb) => {
   pool.connect((err, client, release) => {
