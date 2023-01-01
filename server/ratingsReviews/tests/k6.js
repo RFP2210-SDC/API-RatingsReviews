@@ -39,18 +39,18 @@ export const options = {
     // RAMPING
     '3RPS': {
       executor: 'ramping-arrival-rate',
-      preAllocatedVUs: 50,
+      preAllocatedVUs: 100,
       startRate: 0,
       timeUnit: '1s',
       gracefulStop: '1s',
       stages: [
         { target: 3, duration: '2s' },
-        { target: 3, duration: '28s' },
+        { target: 3, duration: '58s' },
       ],
     },
   },
   tags: {
-    name: 'Iteration3',
+    name: 'Iteration4',
   },
 };
 
