@@ -42,6 +42,7 @@ export const options = {
       preAllocatedVUs: 50,
       startRate: 0,
       timeUnit: '1s',
+      gracefulStop: '1s',
       stages: [
         { target: 3, duration: '2s' },
         { target: 3, duration: '28s' },
@@ -49,7 +50,7 @@ export const options = {
     },
   },
   tags: {
-    name: 'Iteration1-02',
+    name: 'Iteration3',
   },
 };
 
