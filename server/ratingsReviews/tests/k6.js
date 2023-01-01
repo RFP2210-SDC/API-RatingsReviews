@@ -39,7 +39,7 @@ export const options = {
     // RAMPING
     '3RPS': {
       executor: 'ramping-arrival-rate',
-      preAllocatedVUs: 40,
+      preAllocatedVUs: 50,
       startRate: 0,
       timeUnit: '1s',
       stages: [
@@ -47,6 +47,9 @@ export const options = {
         { target: 3, duration: '28s' },
       ],
     },
+  },
+  tags: {
+    name: 'Iteration1-02',
   },
 };
 
@@ -60,3 +63,9 @@ export default function () {
   check(res, { 'status was 200': (r) => r.status === 200 });
   sleep((Math.random() * (6 - 1) + 1) / 1000); // random sleep btw 1 and 6 ms
 }
+
+// export function handleSummary(data) {
+//   return {
+//     "summary.html": htmlReport(data),
+//   };
+// }
