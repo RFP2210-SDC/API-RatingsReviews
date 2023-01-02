@@ -3,7 +3,7 @@
 const { Client, Pool } = require('pg');
 const format = require('pg-format');
 
-const [reviews, reviewPhotos, chars, charReviews] = process.env.NODE_ENV === 'test'
+const [reviewsTbl, reviewPhotosTbl, charsTbl, charReviewsTbl] = process.env.NODE_ENV === 'test'
   ? ['test_reviews', 'test_reviews_photos', 'test_characteristics', 'test_characteristic_reviews']
   : ['reviews', 'reviews_photos', 'characteristics', 'characteristic_reviews'];
 
@@ -37,7 +37,7 @@ exports.update = (review_id, reportHelp, client, release, callback) => {
     'UPDATE %s '
     + 'SET %s '
     + 'WHERE review_id=%s;',
-    reviews,
+    reviewsTbl,
     setClause,
     review_id,
   );
@@ -78,8 +78,8 @@ exports.getReviews = (params, client, release, callback) => {
     + 'WHERE product_id=%s AND reported=false '
     + 'GROUP BY r.review_id '
     + 'ORDER BY %s LIMIT %s OFFSET %s;',
-    reviews,
-    reviewPhotos,
+    reviewsTbl,
+    reviewPhotosTbl,
     product_id,
     sortOrder,
     count,
@@ -118,8 +118,8 @@ exports.getMetadata = (product_id, client, release, callback) => {
       + 'GROUP BY c.id, c.name'
     + ') AS s '
     + 'GROUP BY s.product_id;',
-    charReviews,
-    chars,
+    charReviewsTbl,
+    charsTbl,
     product_id,
   );
 
@@ -132,7 +132,7 @@ exports.getMetadata = (product_id, client, release, callback) => {
       + 'GROUP BY rating, product_id'
     + ') AS s '
     + 'GROUP BY s.product_id;',
-    reviews,
+    reviewsTbl,
     product_id,
   );
 
@@ -145,7 +145,7 @@ exports.getMetadata = (product_id, client, release, callback) => {
       + 'GROUP BY product_id, recommend '
     + ') AS s '
     + 'GROUP BY s.product_id;',
-    reviews,
+    reviewsTbl,
     product_id,
   );
 
@@ -180,7 +180,7 @@ exports.postReview = (params, client, release, callback) => {
       + 'reviewer_name, reviewer_email) '
       + 'VALUES (%s, %s, NOW(), %L, %L, %L, %L, %L) '
       + 'RETURNING review_id;', // returning review_id because we don't know what it is apriori.
-    reviews,
+    reviewsTbl,
     product_id,
     rating,
     summary,
@@ -196,7 +196,7 @@ exports.postReview = (params, client, release, callback) => {
       'INSERT INTO %s (review_id, url) '
         + 'VALUES %L '
         + 'RETURNING review_id;',
-      reviewPhotos,
+      reviewPhotosTbl,
       values,
     );
   }
@@ -209,7 +209,7 @@ exports.postReview = (params, client, release, callback) => {
     return format(
       'INSERT INTO %s (characteristic_id, value, review_id) '
         + 'VALUES %L;',
-      charReviews,
+      charReviewsTbl,
       values,
     );
   }

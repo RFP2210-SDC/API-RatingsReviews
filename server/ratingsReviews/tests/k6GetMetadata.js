@@ -3,22 +3,24 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
+const RPS = 16;
+const scenarios = {};
+const scenario = {
+  executor: 'ramping-arrival-rate',
+  preAllocatedVUs: 50,
+  startRate: 0,
+  timeUnit: '1s',
+  gracefulStop: '1s',
+  stages: [
+    { target: RPS, duration: '3s' },
+    { target: RPS, duration: '27s' },
+  ],
+};
+scenarios[`${RPS}RPS`] = scenario;
 export const options = {
-  scenarios: {
-    '2RPS': {
-      executor: 'ramping-arrival-rate',
-      preAllocatedVUs: 50,
-      startRate: 0,
-      timeUnit: '1s',
-      gracefulStop: '1s',
-      stages: [
-        { target: 2, duration: '3s' },
-        { target: 2, duration: '27s' },
-      ],
-    },
-  },
+  scenarios,
   tags: {
-    name: 'metadataIteration1-02',
+    name: 'metadataIteration2',
   },
 };
 

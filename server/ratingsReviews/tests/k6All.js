@@ -51,7 +51,16 @@ export default function () {
   }
 
   // then, estimating 10% of users will POST a review
+  const postReview = Math.floor(Math.random() * 9) === 0;
   // WRITE POST REQUEST FOR REVIEW HERE.
+
+  // then, estimating 5% of users will mark a review as helpful
+  const markHelpful = Math.floor(Math.random() * 19) === 0;
+  // WRITE PUT REQUEST FOR REVIEW HELPFUL HERE.
+
+  // then, estimating 0.1% of users will mark a review as helpful
+  const markReported = Math.floor(Math.random() * 999) === 0;
+  // WRITE PUT REQUEST FOR REVIEW HELPFUL HERE.
 
   sleep((Math.random() * (6 - 1) + 1) / 1000); // random sleep btw 1 and 6 ms
 }
