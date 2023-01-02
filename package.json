@@ -9,6 +9,7 @@
     "log": "code /opt/homebrew/var/log/postgresql@14.log",
     "k6GetReviews": "k6 run --out statsd server/ratingsReviews/tests/k6GetReviews.js",
     "k6GetMetadata": "k6 run --out statsd server/ratingsReviews/tests/k6GetMetadata.js",
+    "k6PostReview": "k6 run --out statsd server/ratingsReviews/tests/k6PostReview.js",
     "rebootDB": "brew services restart postgresql",
     "clearCache": "sync && sudo purge"
   },
