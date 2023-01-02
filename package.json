@@ -7,7 +7,7 @@
     "regen": "psql reviews < server/ratingsReviews/etl/regenTbls.sql",
     "test": "jest --forceExit",
     "log": "code /opt/homebrew/var/log/postgresql@14.log",
-    "k6": "k6 run server/ratingsReviews/tests/k6.js",
+    "k6GetReviews": "k6 run server/ratingsReviews/tests/k6GetReviews.js",
     "rebootDB": "brew services restart postgresql",
     "clearCache": "sync && sudo purge"
   },

@@ -3,12 +3,6 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
-// // EXAMPLE OF VUs
-// export const options = {
-//   vus: 1,
-//   duration: '30s',
-// };
-
 // // EXAMPLE OF VUs WITH RAMPING
 // export const options = {
 //   stages: [
@@ -37,20 +31,20 @@ export const options = {
     // },
 
     // RAMPING
-    '10RPS': {
+    '30RPS': {
       executor: 'ramping-arrival-rate',
       preAllocatedVUs: 50,
       startRate: 0,
       timeUnit: '1s',
       gracefulStop: '1s',
       stages: [
-        { target: 10, duration: '3s' },
-        { target: 10, duration: '27s' },
+        { target: 30, duration: '3s' },
+        { target: 30, duration: '27s' },
       ],
     },
   },
   tags: {
-    name: 'Iteration5',
+    name: 'temp-test',
   },
 };
 
@@ -64,9 +58,3 @@ export default function () {
   check(res, { 'status was 200': (r) => r.status === 200 });
   sleep((Math.random() * (6 - 1) + 1) / 1000); // random sleep btw 1 and 6 ms
 }
-
-// export function handleSummary(data) {
-//   return {
-//     "summary.html": htmlReport(data),
-//   };
-// }
