@@ -64,7 +64,7 @@ SELECT s.product_id::text, JSONB_OBJECT_AGG(name, characteristics) AS characteri
       JSONB_BUILD_OBJECT('id', c.id, 'value', ROUND(AVG(cr.value),4)) AS characteristics
       FROM characteristic_reviews AS cr
       JOIN characteristics AS c ON c.id=cr.characteristic_id
-      WHERE c.product_id=1
+      WHERE c.product_id=965029
       GROUP BY c.id, c.name
   ) AS s
   GROUP BY s.product_id;
@@ -92,7 +92,7 @@ SELECT JSONB_OBJECT_AGG(rating, ratings::text) AS ratings
 FROM (
   SELECT product_id, rating, COUNT(rating) AS ratings
     FROM reviews AS r
-    WHERE product_id=79
+    WHERE product_id=965029
     GROUP BY rating, product_id
 ) AS s
 GROUP BY s.product_id;
@@ -106,7 +106,7 @@ SELECT JSONB_OBJECT_AGG(recommend, recommendCnt::text) AS recommended
 FROM (
   SELECT product_id, recommend, COUNT(recommend) AS recommendCnt
     FROM reviews AS r
-    WHERE product_id=79
+    WHERE product_id=965029
     GROUP BY product_id, recommend
 ) AS s
 GROUP BY s.product_id;
