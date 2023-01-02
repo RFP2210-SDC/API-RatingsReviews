@@ -31,20 +31,20 @@ export const options = {
     // },
 
     // RAMPING
-    '30RPS': {
+    '4800RPS': {
       executor: 'ramping-arrival-rate',
-      preAllocatedVUs: 50,
+      preAllocatedVUs: 6000,
       startRate: 0,
       timeUnit: '1s',
       gracefulStop: '1s',
       stages: [
-        { target: 30, duration: '3s' },
-        { target: 30, duration: '27s' },
+        { target: 4800, duration: '3s' },
+        { target: 4800, duration: '27s' },
       ],
     },
   },
   tags: {
-    name: 'temp-test',
+    name: 'Iteration6',
   },
 };
 

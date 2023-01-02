@@ -48,7 +48,7 @@ export const options = {
   },
 };
 
-// TESTING SINGLE ENDPOINT - GET /reviews
+// TESTING A SIMULATED USER - ALL ENDPOINTS
 export default function () {
   const PRODUCT_QTY = 1000011;
   const lbID = PRODUCT_QTY * 0.9;
