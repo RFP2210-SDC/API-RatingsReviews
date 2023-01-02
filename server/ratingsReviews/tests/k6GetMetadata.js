@@ -3,11 +3,11 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
-const RPS = 16;
+const RPS = 3200;
 const scenarios = {};
 const scenario = {
   executor: 'ramping-arrival-rate',
-  preAllocatedVUs: 50,
+  preAllocatedVUs: 400,
   startRate: 0,
   timeUnit: '1s',
   gracefulStop: '1s',
@@ -20,7 +20,7 @@ scenarios[`${RPS}RPS`] = scenario;
 export const options = {
   scenarios,
   tags: {
-    name: 'metadataIteration2',
+    name: 'metadataIteration3',
   },
 };
 

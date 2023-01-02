@@ -35,7 +35,7 @@ export default function () {
   const res2 = http.get(`http://localhost:3000/reviews/meta?product_id=${productId}`);
   check(res2, { 'status was 200': (r) => r.status === 200 });
 
-  sleep((Math.random() * (6 - 1) + 1) / 1000); // random sleep btw 1 and 6 ms
+  sleep(5000);
 
   // then, estimating 50% of users will load 2 more reviews
   const loadMoreReviews = !Math.floor(Math.random() * 2);
@@ -45,6 +45,7 @@ export default function () {
     const loadEvenMoreReviews = !Math.floor(Math.random() * 2);
     // then, estimating 25% of users will load 2 more reviews after that
     if (loadEvenMoreReviews) {
+      sleep(5000);
       const res4 = http.get(`http://localhost:3000/reviews?count=2&page=2&product_id=${productId}`);
       check(res4, { 'status was 200': (r) => r.status === 200 });
     }
