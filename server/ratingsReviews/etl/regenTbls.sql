@@ -42,10 +42,10 @@ CREATE TABLE characteristic_reviews (
   value INT
 );
 
--- CREATE INDEX idx_reviews_product_id ON reviews(product_id);
--- CREATE INDEX idx_reviews_photos_review_id ON reviews_photos(review_id);
--- CREATE INDEX idx_char_reviews_char_id ON characteristic_reviews(characteristic_id);
--- CREATE INDEX idx_chars_product_id ON characteristics(product_id);
+CREATE INDEX idx_reviews_product_id ON reviews(product_id);
+CREATE INDEX idx_reviews_photos_review_id ON reviews_photos(review_id);
+CREATE INDEX idx_char_reviews_char_id ON characteristic_reviews(characteristic_id);
+CREATE INDEX idx_chars_product_id ON characteristics(product_id);
 
 INSERT INTO reviews (product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
 SELECT product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness
