@@ -3,13 +3,13 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
-const testName = 'postReviewIteration1';
+const testName = 'postReviewIteration2';
 
-const RPS = 3400;
+const RPS = 2900;
 const scenarios = {};
 const scenario = {
   executor: 'ramping-arrival-rate',
-  preAllocatedVUs: 500,
+  preAllocatedVUs: 900,
   startRate: 0,
   timeUnit: '1s',
   gracefulStop: '1s',
