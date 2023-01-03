@@ -10,6 +10,7 @@
     "k6GetReviews": "k6 run --out statsd server/ratingsReviews/tests/k6GetReviews.js",
     "k6GetMetadata": "k6 run --out statsd server/ratingsReviews/tests/k6GetMetadata.js",
     "k6PostReview": "k6 run --out statsd server/ratingsReviews/tests/k6PostReview.js",
+    "k6All": "k6 run --out statsd server/ratingsReviews/tests/k6All.js",
     "rebootDB": "brew services restart postgresql",
     "clearCache": "sync && sudo purge"
   },

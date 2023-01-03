@@ -120,4 +120,4 @@ WHERE review_id=1;
 -- WORKING ON POST REVIEW: REVIEW QUERY
 
 INSERT INTO reviews (product_id, rating, date, summary, body, recommend, reviewer_name, reviewer_email)
-  VALUES (965029, 5, NOW(), 'greatest product ever!', 'best purchase of all time, thanks!', true, 'chad', 'a@aol.com');
+  VALUES (965030, 5, NOW(), 'greatest product ever!', 'best purchase of all time, thanks!', true, 'chad', 'a@aol.com');
