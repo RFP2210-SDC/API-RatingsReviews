@@ -3,9 +3,9 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
-const testName = 'postReviewIteration0-05';
+const testName = 'postReviewIteration1';
 
-const RPS = 3600;
+const RPS = 3400;
 const scenarios = {};
 const scenario = {
   executor: 'ramping-arrival-rate',
