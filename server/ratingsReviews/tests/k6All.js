@@ -3,21 +3,21 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
-const testName = 'ALL-Iteration2-04';
+const testName = 'ALL-Iteration1';
 
-const desiredRPS = 3000;
+const desiredRPS = 6;
 const requestsPerIteration = 3; // approx
 const RPS = desiredRPS / requestsPerIteration;
 const scenarios = {};
 const scenario = {
   executor: 'ramping-arrival-rate',
-  preAllocatedVUs: 30000,
+  preAllocatedVUs: 50,
   startRate: 0,
   timeUnit: '1s',
   gracefulStop: '1s',
   stages: [
     { target: RPS, duration: '3s' },
-    { target: RPS, duration: '297s' },
+    { target: RPS, duration: '27s' },
   ],
 };
 scenarios[`${RPS}RPS`] = scenario;
@@ -44,13 +44,13 @@ export default function () {
   // then, estimating 50% of users will load 2 more reviews
   const loadMoreReviews = !Math.floor(Math.random() * 2);
   if (loadMoreReviews) {
-    sleep(5);
+    sleep(5 / 1000);
     const res3 = http.get(`http://localhost:3000/reviews?count=2&page=2&product_id=${productId}`);
     check(res3, { 'status was 200': (r) => r.status === 200 });
     // then, estimating 35% of users will load 2 more reviews after that
     const loadEvenMoreReviews = Math.floor(Math.random() * 9) < 7;
     if (loadEvenMoreReviews) {
-      sleep(5);
+      sleep(5 / 1000);
       const res4 = http.get(`http://localhost:3000/reviews?count=2&page=2&product_id=${productId}`);
       check(res4, { 'status was 200': (r) => r.status === 200 });
     }
@@ -59,7 +59,7 @@ export default function () {
   // then, estimating 10% of users will POST a review
   const postReview = Math.floor(Math.random() * 9) === 0;
   if (postReview) {
-    sleep(Math.floor(Math.random() * (40 - 20) + 20)); // Users post review average of 30s later
+    sleep(Math.floor(Math.random() * (40 - 20) + 20) / 1000); // Users post review avg of 30s later
     const url = 'http://localhost:3000/reviews';
     const payload = JSON.stringify({
       product_id: productId,
@@ -85,7 +85,7 @@ export default function () {
   // then, estimating 5% of users will mark a review as helpful
   const markHelpful = Math.floor(Math.random() * 19) === 0;
   if (markHelpful) {
-    sleep(5);
+    sleep(5 / 1000);
     const res4 = http.put(`http://localhost:3000/reviews/${productId}/helpful`);
     check(res4, { 'status was 204': (r) => r.status === 204 });
   }
@@ -93,7 +93,7 @@ export default function () {
   // then, estimating 0.1% of users will mark a review as reported
   const markReported = Math.floor(Math.random() * 999) === 0;
   if (markReported) {
-    sleep(5);
+    sleep(5 / 1000);
     const res4 = http.put(`http://localhost:3000/reviews/${productId - 1}/report`);
     check(res4, { 'status was 204': (r) => r.status === 204 });
   }
