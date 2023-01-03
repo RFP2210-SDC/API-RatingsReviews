@@ -83,11 +83,19 @@ export default function () {
 
   // then, estimating 5% of users will mark a review as helpful
   const markHelpful = Math.floor(Math.random() * 19) === 0;
-  // WRITE PUT REQUEST FOR REVIEW HELPFUL HERE.
+  if (markHelpful) {
+    sleep(5000);
+    const res4 = http.put(`http://localhost:3000/reviews/${productId}/helpful`);
+    check(res4, { 'status was 204': (r) => r.status === 204 });
+  }
 
   // then, estimating 0.1% of users will mark a review as helpful
   const markReported = Math.floor(Math.random() * 999) === 0;
-  // WRITE PUT REQUEST FOR REVIEW HELPFUL HERE.
+  if (markReported) {
+    sleep(5000);
+    const res4 = http.put(`http://localhost:3000/reviews/${productId}/report`);
+    check(res4, { 'status was 204': (r) => r.status === 204 });
+  }
 
   sleep((Math.random() * (6 - 1) + 1) / 1000); // random sleep btw 1 and 6 ms
 }
