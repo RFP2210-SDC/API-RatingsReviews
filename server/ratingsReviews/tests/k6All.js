@@ -3,15 +3,15 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
-const testName = 'ALL-Iteration2-02';
+const testName = 'ALL-Iteration2-04';
 
-const desiredRPS = 3900;
+const desiredRPS = 3000;
 const requestsPerIteration = 3; // approx
 const RPS = desiredRPS / requestsPerIteration;
 const scenarios = {};
 const scenario = {
   executor: 'ramping-arrival-rate',
-  preAllocatedVUs: 70000,
+  preAllocatedVUs: 30000,
   startRate: 0,
   timeUnit: '1s',
   gracefulStop: '1s',
@@ -59,7 +59,7 @@ export default function () {
   // then, estimating 10% of users will POST a review
   const postReview = Math.floor(Math.random() * 9) === 0;
   if (postReview) {
-    sleep(60);
+    sleep(Math.floor(Math.random() * (40 - 20) + 20)); // Users post review average of 30s later
     const url = 'http://localhost:3000/reviews';
     const payload = JSON.stringify({
       product_id: productId,
