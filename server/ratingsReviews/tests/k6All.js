@@ -3,22 +3,26 @@ import http from 'k6/http';
 // eslint-disable-next-line import/no-unresolved
 import { check, sleep } from 'k6';
 
+const testName = 'postReviewIteration0-04';
+
+const RPS = 2;
+const scenarios = {};
+const scenario = {
+  executor: 'ramping-arrival-rate',
+  preAllocatedVUs: 400,
+  startRate: 0,
+  timeUnit: '1s',
+  gracefulStop: '1s',
+  stages: [
+    { target: RPS, duration: '3s' },
+    { target: RPS, duration: '27s' },
+  ],
+};
+scenarios[`${RPS}RPS`] = scenario;
 export const options = {
-  scenarios: {
-    '10RPS': {
-      executor: 'ramping-arrival-rate',
-      preAllocatedVUs: 50,
-      startRate: 0,
-      timeUnit: '1s',
-      gracefulStop: '1s',
-      stages: [
-        { target: 10, duration: '3s' },
-        { target: 10, duration: '27s' },
-      ],
-    },
-  },
+  scenarios,
   tags: {
-    name: 'temp-test',
+    testName,
   },
 };
 
@@ -53,7 +57,29 @@ export default function () {
 
   // then, estimating 10% of users will POST a review
   const postReview = Math.floor(Math.random() * 9) === 0;
-  // WRITE POST REQUEST FOR REVIEW HERE.
+  if (postReview) {
+    sleep(60000);
+    const url = 'http://localhost:3000/reviews';
+    const payload = JSON.stringify({
+      product_id: productId,
+      rating: 3,
+      summary: testName,
+      body: 'Lorem ipsum dolor sit amet consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes nascetur ridiculus mus. Donec qu',
+      recommend: true,
+      name: 'mr nobody',
+      email: 'nobody@yahoo.com',
+      photos: ['test1', 'test2'],
+      // eslint-disable-next-line object-curly-newline
+      characteristics: { 1: 1, 2: 1, 3: 1, 4: 1 },
+    });
+    const params = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const res = http.post(url, payload, params);
+    check(res, { 'status was 201': (r) => r.status === 201 });
+  }
 
   // then, estimating 5% of users will mark a review as helpful
   const markHelpful = Math.floor(Math.random() * 19) === 0;
