@@ -18,6 +18,10 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(compression());
 
 // ROUTES
+app.get('/loaderio-1847727f490bdd983686b2bbcc704115', (req, res) => (
+  res.send('loaderio-1847727f490bdd983686b2bbcc704115')
+));
+
 app.put('/reviews/:review_id/helpful', (req, res) => {
   db.getConnection((error, client, release) => {
     if (error) {
