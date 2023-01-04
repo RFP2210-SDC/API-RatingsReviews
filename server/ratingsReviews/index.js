@@ -1,4 +1,5 @@
 // REQUIRE STATEMENTS
+const newrelic = require('newrelic')
 const app = require('./server');
 
 // PORT AND SERVER LISTEN
