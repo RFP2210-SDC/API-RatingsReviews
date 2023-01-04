@@ -55,7 +55,6 @@ app.put('/reviews/:review_id/report', (req, res) => {
 });
 
 app.get('/reviews', (req, res) => {
-  console.log('getting reviews...');
   db.getConnection((error, client, release) => {
     if (error) {
       res.status(400).send(error);

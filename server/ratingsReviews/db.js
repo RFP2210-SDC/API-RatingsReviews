@@ -26,13 +26,10 @@ const pool = new Pool({
 });
 
 exports.getConnection = (cb) => {
-  console.log('getting connection from pool...');
   pool.connect((err, client, release) => {
     if (err) {
-      console.log('db conn failed:', err);
       cb(err.stack);
     } else {
-      console.log('db conn successful');
       cb(null, client, release);
     }
   });
