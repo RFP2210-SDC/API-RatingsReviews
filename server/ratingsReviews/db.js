@@ -16,13 +16,22 @@ if (process.env.NODE_ENV === 'test') {
 
 exports.db = testClient;
 
-const pool = new Pool({ idleTimeoutMillis: 30000 });
+const pool = new Pool({
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPORT,
+  idleTimeoutMillis: 30000,
+});
 
 exports.getConnection = (cb) => {
+  console.log('getting connection from pool...');
   pool.connect((err, client, release) => {
     if (err) {
+      console.log('db conn failed');
       cb(err.stack);
     } else {
+      console.log('db conn successful');
       cb(null, client, release);
     }
   });
