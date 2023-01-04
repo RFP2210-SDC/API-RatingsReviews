@@ -4,7 +4,7 @@ SELECT r.review_id, rating, summary, recommend, response, body, date, reviewer_n
   helpfulness, JSONB_AGG(JSONB_BUILD_OBJECT('id', id, 'url', url) ORDER BY id) AS photos
   FROM reviews AS r
   LEFT JOIN reviews_photos AS p ON r.review_id=p.review_id
-  WHERE product_id=1 AND reported=false
+  WHERE product_id=965029 AND reported=false
   GROUP BY r.review_id
   ORDER BY helpfulness-(extract(epoch from now())::INTEGER
     - extract(epoch from date)::INTEGER)/2600000 DESC, r.review_id
