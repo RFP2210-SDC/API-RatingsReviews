@@ -20,7 +20,7 @@ scenarios[`${RPS}RPS`] = scenario;
 export const options = {
   scenarios,
   tags: {
-    name: 'metadataIteration3',
+    name: 'metadataIteration3-01',
   },
 };
 
