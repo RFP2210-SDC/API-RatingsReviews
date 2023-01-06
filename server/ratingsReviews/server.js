@@ -11,7 +11,8 @@ const db = require('./db');
 const app = express();
 
 // APP-WIDE MIDDLEWARE
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
+app.use(morgan('combined'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
