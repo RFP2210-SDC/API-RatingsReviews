@@ -12,7 +12,8 @@
     "k6PostReview": "k6 run server/ratingsReviews/tests/k6PostReview.js",
     "k6All": "k6 run server/ratingsReviews/tests/k6All.js",
     "rebootDB": "brew services restart postgresql",
-    "clearCache": "sync && sudo purge"
+    "clearCache": "sync && sudo purge",
+    "debug": "DEBUG=http,query nodemon server/ratingsReviews/index.js"
   },
   "dependencies": {
     "axios": "^1.2.1",
