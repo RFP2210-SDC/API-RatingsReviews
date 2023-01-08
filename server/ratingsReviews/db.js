@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 /* eslint-disable consistent-return */
-const debug = require('debug')('query');
 const { Client, Pool } = require('pg');
 const format = require('pg-format');
 
@@ -94,12 +93,9 @@ exports.getReviews = (params, client, release, callback) => {
     offset,
   );
 
-  debug('Query string processed. Handing off to Postgres...');
-
   // Perform query
   client.query(query)
     .then((res) => {
-      debug('Results rcvd from Postgres. Processing in Node...');
       const results = res.rows.map((review) => (
         review.photos.length === 1 && !review.photos[0].url ? { ...review, photos: [] } : review
       ));
@@ -160,25 +156,18 @@ exports.getMetadata = (product_id, client, release, callback) => {
     product_id,
   );
 
-  debug('Query strings processed. Handing off to Postgres...');
-
   // Perform queries
   const results = {};
   client.query(characterQuery)
     .then((res) => {
-      debug('Postgres characteristics query results rcvd. Processing in node...');
       Object.assign(results, res.rows[0]);
-      debug('Processing complete. Handing off to Postgres...');
       return client.query(ratingsQuery);
     })
     .then((res) => {
-      debug('Postgres ratings query results rcvd. Processing in node...');
       Object.assign(results, res.rows[0]);
-      debug('Processing complete. Handing off to Postgres...');
       return client.query(recommendQuery);
     })
     .then((res) => {
-      debug('Postgres recommend query results rcvd. Processing in node...');
       Object.assign(results, res.rows[0]);
       callback(null, results);
     })
