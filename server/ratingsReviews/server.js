@@ -1,5 +1,4 @@
 // REQUIRE STATEMENTS
-const debug = require('debug')('http');
 require('dotenv').config();
 const express = require('express');
 // const morgan = require('morgan');
@@ -10,15 +9,6 @@ const db = require('./db');
 const app = express();
 
 // APP-WIDE MIDDLEWARE
-app.use((req, res, next) => {
-  debug('Request rcvd, Morgan starting...');
-  next();
-});
-// app.use(morgan('dev'));
-app.use((req, res, next) => {
-  debug('Morgan complete. Remaining middleware starting...');
-  next();
-});
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -62,19 +52,15 @@ app.put('/reviews/:review_id/report', (req, res) => {
 });
 
 app.get('/reviews', (req, res) => {
-  debug('Middleware complete. Starting database conn...');
   db.getConnection((error, client, release) => {
     if (error) {
       res.status(400).send(error);
     } else {
-      debug('Database connection established');
       db.getReviews(req.query, client, release, (err, reviews) => {
         if (err) {
           res.status(400).send(err);
         } else {
-          debug('Reviews processed');
           res.status(200).send(reviews);
-          debug('Reviews sent');
         }
       });
     }
@@ -82,19 +68,15 @@ app.get('/reviews', (req, res) => {
 });
 
 app.get('/reviews/meta', (req, res) => {
-  debug('Middleware complete. Starting database conn...');
   db.getConnection((error, client, release) => {
     if (error) {
       res.status(400).send(error);
     } else {
-      debug('Database connection established');
       db.getMetadata(req.query.product_id, client, release, (err, metadata) => {
         if (err) {
           res.status(400).send(err);
         } else {
-          debug('Metadata processed');
           res.status(200).send(metadata);
-          debug('Metadata sent');
         }
       });
     }
