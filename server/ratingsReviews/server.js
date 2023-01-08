@@ -2,7 +2,7 @@
 const debug = require('debug')('http');
 require('dotenv').config();
 const express = require('express');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const cors = require('cors');
 // const compression = require('compression');
 const db = require('./db');
@@ -14,7 +14,7 @@ app.use((req, res, next) => {
   debug('Request rcvd, Morgan starting...');
   next();
 });
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use((req, res, next) => {
   debug('Morgan complete. Remaining middleware starting...');
   next();
