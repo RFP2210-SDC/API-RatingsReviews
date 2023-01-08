@@ -72,7 +72,7 @@ app.get('/reviews', (req, res) => {
         if (err) {
           res.status(400).send(err);
         } else {
-          debug('Reviews returned from database');
+          debug('Reviews processed');
           res.status(200).send(reviews);
           debug('Reviews sent');
         }
@@ -92,9 +92,9 @@ app.get('/reviews/meta', (req, res) => {
         if (err) {
           res.status(400).send(err);
         } else {
-          debug('Reviews returned from database');
+          debug('Metadata processed');
           res.status(200).send(metadata);
-          debug('Reviews sent');
+          debug('Metadata sent');
         }
       });
     }
