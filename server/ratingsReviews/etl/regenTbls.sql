@@ -63,6 +63,8 @@ INSERT INTO characteristic_reviews (characteristic_id, review_id, value)
 SELECT characteristic_id, review_id, value
 FROM orig_characteristic_reviews;
 
+\i server/ratingsReviews/etl/denormalize.sql
+
 
 /*  Execute this file from the command line by typing:
  *    psql reviews < server/ratingsReviews/etl/regenTbls.sql

@@ -10,6 +10,16 @@ SELECT r.review_id, rating, summary, recommend, response, body, date, reviewer_n
     - extract(epoch from date)::INTEGER)/2600000 DESC, r.review_id
   LIMIT 5 OFFSET 0;
 
+-- GET ALL REVIEW FOR V2:
+
+SELECT review_id, rating, summary, recommend, response, body, date, reviewer_name,
+  helpfulness, photos
+  FROM reviewsV2
+  WHERE product_id=965029 AND reported=false
+  ORDER BY helpfulness-(extract(epoch from now())::INTEGER
+    - extract(epoch from date)::INTEGER)/2600000 DESC, review_id
+  LIMIT 5 OFFSET 0;
+
 
 -- WORKING ON METADATA CHARACTERISTICS
 
