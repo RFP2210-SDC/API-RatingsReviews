@@ -33,7 +33,6 @@ INSERT INTO reviewsV2 (product_id, rating, date, summary, body, recommend, repor
 SELECT product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness, JSONB_AGG(JSONB_BUILD_OBJECT('id', id, 'url', url) ORDER BY id) AS photos
   FROM reviews AS r
   LEFT JOIN reviews_photos AS p ON r.review_id=p.review_id
-  WHERE reviews_id=1;
   GROUP BY r.review_id;
 
 -- INSERT INTO characteristicsV2 (product_id, review_id, characteristics)
