@@ -1,4 +1,4 @@
-# Amorey Clothing Ratings and Reviews Service
+# The ugly. Company Ratings and Reviews Service
 
 ## Table of Contents
 - [Description](#description)
